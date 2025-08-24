@@ -159,6 +159,7 @@ export default function NewApplicationPage() {
       if (error) throw error
 
       router.push('/dashboard/student')
+      router.refresh() // Force refresh to reload server data
     } catch (error) {
       console.error('Error creating application:', error)
       alert('Error creating application. Please try again.')
