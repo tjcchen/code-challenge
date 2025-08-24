@@ -31,13 +31,19 @@ export default function SetupPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('handleSubmit called!')
     e.preventDefault()
-    if (!user) return
+    if (!user) {
+      console.error('No user found')
+      return
+    }
 
+    console.log('Starting setup process for user:', user.email)
     setLoading(true)
 
     try {
       // Create profile
+      console.log('Creating profile...')
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
@@ -47,9 +53,14 @@ export default function SetupPage() {
           phone: formData.phone || null,
         })
 
-      if (profileError) throw profileError
+      if (profileError) {
+        console.error('Profile error:', profileError)
+        throw profileError
+      }
+      console.log('Profile created successfully')
 
       // Create user role
+      console.log('Creating user role...')
       const { error: roleError } = await supabase
         .from('user_roles')
         .upsert({
@@ -57,7 +68,11 @@ export default function SetupPage() {
           role: role,
         })
 
-      if (roleError) throw roleError
+      if (roleError) {
+        console.error('Role error:', roleError)
+        throw roleError
+      }
+      console.log('User role created successfully')
 
       // If student, create student profile
       if (role === 'student') {
@@ -84,7 +99,6 @@ export default function SetupPage() {
       }
     } catch (error) {
       console.error('Setup error:', error)
-      alert('Error setting up profile. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -130,7 +144,10 @@ export default function SetupPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+        <form onSubmit={(e) => {
+          console.log('Form onSubmit triggered')
+          handleSubmit(e)
+        }} className="mt-8 space-y-6">
           <div className="card">
             {/* Role Selection */}
             <div className="mb-6">
@@ -281,6 +298,10 @@ export default function SetupPage() {
               type="submit"
               disabled={loading}
               className="w-full btn-primary mt-6"
+              onClick={(e) => {
+                console.log('Button clicked!')
+                // Don't prevent default - let form submission handle it
+              }}
             >
               {loading ? 'Setting up...' : 'Complete Setup'}
             </button>
