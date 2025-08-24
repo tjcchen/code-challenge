@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClientSupabase } from '@/lib/supabase'
 import { useUser } from '@supabase/auth-helpers-react'
 import { Navbar } from '@/components/layout/Navbar'
-import { ArrowLeft, Search, Building2, MapPin, Calendar, Star, Users, DollarSign, Clock, FileText, AlertCircle, Filter } from 'lucide-react'
+import { Building2, Search, Filter, MapPin, Users, DollarSign, FileText, ArrowLeft, Award, Star, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import type { University as UniversityType, ApplicationType } from '@/types/database'
 import { ApplicationTimeline } from '@/components/ui/ApplicationTimeline'
@@ -37,6 +37,7 @@ export default function NewApplicationPage() {
     tuition_max: '',
   })
   const [showFilters, setShowFilters] = useState(false)
+  const [showApplicationForm, setShowApplicationForm] = useState(false)
 
   const supabase = createClientSupabase()
   const user = useUser()
@@ -181,9 +182,9 @@ export default function NewApplicationPage() {
           <p className="text-gray-600 mt-2">Search for a university and create your application with comprehensive tracking</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
           {/* University Search & Filters */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2">
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-900">大学搜索和选择</h2>
@@ -371,236 +372,132 @@ export default function NewApplicationPage() {
             </div>
           </div>
 
-          {/* Application Form */}
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              {/* Form Section */}
-              <div className="xl:col-span-2">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">申请详情</h2>
-            
+          {/* University Information Panel */}
+          <div className="lg:col-span-4">
             {selectedUniversity ? (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="card">
-                  <h3 className="font-semibold text-gray-900 mb-4">
-                    {selectedUniversity.name}
-                  </h3>
-
-                  <div className="space-y-4">
-                    {/* Application Type */}
+              <div className="bg-white rounded-xl border border-gray-200 p-8">
+                {/* University Header */}
+                <div className="flex items-start justify-between mb-8">
+                  <div className="flex items-center">
+                    <div className="p-4 bg-blue-100 rounded-xl mr-6">
+                      <Building2 className="h-10 w-10 text-blue-600" />
+                    </div>
                     <div>
-                      <label className="label">Application Type *</label>
-                      <select
-                        required
-                        className="input"
-                        value={formData.application_type}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          application_type: e.target.value as ApplicationType 
-                        }))}
-                      >
-                        <option value="early_decision">Early Decision</option>
-                        <option value="early_action">Early Action</option>
-                        <option value="regular_decision">Regular Decision</option>
-                        <option value="rolling_admission">Rolling Admission</option>
-                      </select>
-                    </div>
-
-                    {/* Intended Major */}
-                    <div>
-                      <label className="label">Intended Major</label>
-                      <input
-                        type="text"
-                        className="input"
-                        placeholder="e.g., Computer Science"
-                        value={formData.intended_major}
-                        onChange={(e) => setFormData(prev => ({ ...prev, intended_major: e.target.value }))}
-                      />
-                    </div>
-
-                    {/* Deadline */}
-                    <div>
-                      <label className="label">Application Deadline *</label>
-                      <input
-                        type="date"
-                        required
-                        className="input"
-                        value={formData.deadline}
-                        onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
-                      />
-                    </div>
-
-                    {/* Priority Level */}
-                    <div>
-                      <label className="label">Priority Level</label>
-                      <select
-                        className="input"
-                        value={formData.priority_level}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          priority_level: parseInt(e.target.value) 
-                        }))}
-                      >
-                        <option value={1}>1 - Highest Priority</option>
-                        <option value={2}>2 - High Priority</option>
-                        <option value={3}>3 - Medium Priority</option>
-                        <option value={4}>4 - Low Priority</option>
-                        <option value={5}>5 - Lowest Priority</option>
-                      </select>
-                    </div>
-
-                    {/* Financial Aid */}
-                    <div className="space-y-2">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="mr-2"
-                          checked={formData.financial_aid_requested}
-                          onChange={(e) => setFormData(prev => ({ 
-                            ...prev, 
-                            financial_aid_requested: e.target.checked 
-                          }))}
-                        />
-                        <span className="text-sm">Request Financial Aid</span>
-                      </label>
-                      
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="mr-2"
-                          checked={formData.scholarship_applied}
-                          onChange={(e) => setFormData(prev => ({ 
-                            ...prev, 
-                            scholarship_applied: e.target.checked 
-                          }))}
-                        />
-                        <span className="text-sm">Apply for Scholarships</span>
-                      </label>
-                    </div>
-
-                    {/* Notes */}
-                    <div>
-                      <label className="label">Notes</label>
-                      <textarea
-                        className="input"
-                        rows={3}
-                        placeholder="Any additional notes about this application..."
-                        value={formData.notes}
-                        onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                      />
-                    </div>
-
-                    {/* University Info */}
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-gray-900 mb-2">University Information</h4>
-                      <div className="text-sm text-gray-600 space-y-1">
-                        {selectedUniversity.application_system && (
-                          <p>Application System: {selectedUniversity.application_system}</p>
-                        )}
-                        {selectedUniversity.application_fee && (
-                          <p>Application Fee: ${selectedUniversity.application_fee}</p>
-                        )}
-                        {selectedUniversity.tuition_out_state && (
-                          <p>Estimated Tuition: ${selectedUniversity.tuition_out_state.toLocaleString()}/year</p>
-                        )}
-                      </div>
+                      <h2 className="text-3xl font-bold text-gray-900 mb-2">{selectedUniversity.name}</h2>
+                      <p className="text-xl text-gray-600">{selectedUniversity.short_name}</p>
                     </div>
                   </div>
+                  {selectedUniversity.us_news_ranking && (
+                    <div className="text-right">
+                      <div className="text-5xl font-bold text-amber-600">#{selectedUniversity.us_news_ranking}</div>
+                      <div className="text-sm text-gray-500">US News排名</div>
+                    </div>
+                  )}
+                </div>
 
+                {/* Apply Button - Prominent */}
+                <div className="mb-8">
                   <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full btn-primary mt-6"
+                    onClick={() => setShowApplicationForm(true)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 flex items-center justify-center text-lg shadow-lg hover:shadow-xl"
                   >
-                    {loading ? 'Creating Application...' : 'Create Application'}
+                    <FileText className="h-6 w-6 mr-3" />
+                    申请 {selectedUniversity.name}
                   </button>
                 </div>
-              </form>
-            ) : (
-              <div className="card text-center py-12">
-                <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Select a University</h3>
-                <p className="text-gray-600">Choose a university from the list to create your application</p>
-              </div>
-            )}
-              </div>
 
-              {/* University Info & Progress Section */}
-              {selectedUniversity && (
-                <div className="xl:col-span-1 space-y-6">
-                  {/* University Information Panel */}
-                  <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <div className="flex items-start justify-between mb-4">
+                {/* University Details */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">基本信息</h3>
+                    
+                    <div className="flex items-center">
+                      <div className="p-3 bg-blue-100 rounded-lg mr-4">
+                        <MapPin className="h-6 w-6 text-blue-600" />
+                      </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{selectedUniversity.name}</h3>
-                        <p className="text-sm text-gray-600">{selectedUniversity.short_name}</p>
+                        <div className="text-sm text-gray-500">位置</div>
+                        <div className="font-semibold text-lg">{selectedUniversity.city}, {selectedUniversity.state}</div>
+                        <div className="text-gray-600">{selectedUniversity.country}</div>
                       </div>
-                      {selectedUniversity.us_news_ranking && (
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-amber-600">#{selectedUniversity.us_news_ranking}</div>
-                          <div className="text-xs text-gray-500">US News排名</div>
-                        </div>
-                      )}
                     </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center text-sm">
-                        <MapPin className="h-4 w-4 text-gray-400 mr-2" />
-                        <span>{selectedUniversity.city}, {selectedUniversity.state}, {selectedUniversity.country}</span>
+                    
+                    {selectedUniversity.acceptance_rate && (
+                      <div className="flex items-center">
+                        <div className="p-3 bg-green-100 rounded-lg mr-4">
+                          <Users className="h-6 w-6 text-green-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">录取率</div>
+                          <div className="font-semibold text-2xl text-green-700">{selectedUniversity.acceptance_rate}%</div>
+                        </div>
                       </div>
-                      
-                      {selectedUniversity.acceptance_rate && (
-                        <div className="flex items-center text-sm">
-                          <Users className="h-4 w-4 text-gray-400 mr-2" />
-                          <span>录取率: {selectedUniversity.acceptance_rate}%</span>
+                    )}
+                    
+                    {selectedUniversity.application_fee && (
+                      <div className="flex items-center">
+                        <div className="p-3 bg-yellow-100 rounded-lg mr-4">
+                          <DollarSign className="h-6 w-6 text-yellow-600" />
                         </div>
-                      )}
-                      
-                      {selectedUniversity.application_fee && (
-                        <div className="flex items-center text-sm">
-                          <DollarSign className="h-4 w-4 text-gray-400 mr-2" />
-                          <span>申请费: ${selectedUniversity.application_fee}</span>
+                        <div>
+                          <div className="text-sm text-gray-500">申请费</div>
+                          <div className="font-semibold text-2xl text-yellow-700">${selectedUniversity.application_fee}</div>
                         </div>
-                      )}
-                      
-                      {selectedUniversity.tuition_out_state && (
-                        <div className="flex items-center text-sm">
-                          <DollarSign className="h-4 w-4 text-gray-400 mr-2" />
-                          <span>学费: ${selectedUniversity.tuition_out_state.toLocaleString()}/年</span>
+                      </div>
+                    )}
+                    
+                    {selectedUniversity.tuition_out_state && (
+                      <div className="flex items-center">
+                        <div className="p-3 bg-purple-100 rounded-lg mr-4">
+                          <DollarSign className="h-6 w-6 text-purple-600" />
                         </div>
-                      )}
-                      
-                      {selectedUniversity.application_system && (
-                        <div className="flex items-center text-sm">
-                          <FileText className="h-4 w-4 text-gray-400 mr-2" />
-                          <span>申请系统: {selectedUniversity.application_system}</span>
+                        <div>
+                          <div className="text-sm text-gray-500">年学费</div>
+                          <div className="font-semibold text-2xl text-purple-700">${selectedUniversity.tuition_out_state.toLocaleString()}</div>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Deadlines */}
-                    {selectedUniversity.deadlines && (
-                      <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <h4 className="font-medium text-blue-900 mb-2 flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          重要截止日期
-                        </h4>
-                        <div className="space-y-1 text-sm">
-                          {Object.entries(selectedUniversity.deadlines as any).map(([type, date]) => (
-                            <div key={type} className="flex justify-between">
-                              <span className="text-blue-700">
-                                {type === 'early_decision' ? 'ED' :
-                                 type === 'early_action' ? 'EA' :
-                                 type === 'regular_decision' ? 'RD' : type}:
-                              </span>
-                              <span className="text-blue-900 font-medium">{date as string}</span>
-                            </div>
-                          ))}
+                      </div>
+                    )}
+                    
+                    {selectedUniversity.application_system && (
+                      <div className="flex items-center">
+                        <div className="p-3 bg-gray-100 rounded-lg mr-4">
+                          <FileText className="h-6 w-6 text-gray-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500">申请系统</div>
+                          <div className="font-semibold text-lg">{selectedUniversity.application_system}</div>
                         </div>
                       </div>
                     )}
                   </div>
 
-                  <ProgressVisualization currentStatus="not_started" />
+                  {/* Progress Visualization */}
+                  <div>
+                    <ProgressVisualization currentStatus="not_started" />
+                  </div>
+                </div>
+
+                {/* Deadlines */}
+                {selectedUniversity.deadlines && (
+                  <div className="mb-8">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">重要截止日期</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {Object.entries(selectedUniversity.deadlines as any).map(([type, date]) => (
+                        <div key={type} className="p-4 bg-blue-50 rounded-xl text-center">
+                          <div className="text-sm font-medium text-blue-700 mb-2">
+                            {type === 'early_decision' ? 'Early Decision' :
+                             type === 'early_action' ? 'Early Action' :
+                             type === 'regular_decision' ? 'Regular Decision' : type}
+                          </div>
+                          <div className="text-xl font-bold text-blue-900">{date as string}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Timeline and Requirements */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                   <ApplicationTimeline 
                     selectedUniversity={selectedUniversity}
                     applicationDeadline={formData.deadline}
@@ -609,10 +506,170 @@ export default function NewApplicationPage() {
                     universityId={selectedUniversity.id}
                   />
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="text-center py-20">
+                <div className="max-w-md mx-auto">
+                  <div className="p-6 bg-blue-100 rounded-full w-24 h-24 mx-auto mb-8 flex items-center justify-center">
+                    <Building2 className="h-12 w-12 text-blue-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">选择一所大学</h2>
+                  <p className="text-gray-600 mb-8">从左侧列表中选择一所大学，查看详细信息并开始申请</p>
+                  <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                      <span>搜索筛选</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
+                      <span>选择大学</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
+                      <span>提交申请</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Application Form Modal */}
+        {showApplicationForm && selectedUniversity && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              {/* Form Header */}
+              <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-2xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">申请 {selectedUniversity.name}</h2>
+                    <p className="text-gray-600">填写申请信息并提交</p>
+                  </div>
+                  <button
+                    onClick={() => setShowApplicationForm(false)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Form Content */}
+              <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <div>
+                  <label className="label">申请类型 *</label>
+                  <select
+                    className="input"
+                    value={formData.application_type}
+                    onChange={(e) => setFormData(prev => ({ ...prev, application_type: e.target.value as ApplicationType }))}
+                    required
+                  >
+                    <option value="early_decision">Early Decision</option>
+                    <option value="early_action">Early Action</option>
+                    <option value="regular_decision">Regular Decision</option>
+                    <option value="rolling_admission">Rolling Admission</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="label">意向专业</label>
+                  <input
+                    type="text"
+                    className="input"
+                    placeholder="例如：计算机科学、生物学等"
+                    value={formData.intended_major}
+                    onChange={(e) => setFormData(prev => ({ ...prev, intended_major: e.target.value }))}
+                  />
+                </div>
+
+                <div>
+                  <label className="label">申请截止日期 *</label>
+                  <input
+                    type="date"
+                    className="input"
+                    value={formData.deadline}
+                    onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="label">优先级</label>
+                  <select
+                    className="input"
+                    value={formData.priority_level}
+                    onChange={(e) => setFormData(prev => ({ ...prev, priority_level: parseInt(e.target.value) }))}
+                  >
+                    <option value={5}>5 - 梦校</option>
+                    <option value={4}>4 - 高优先级</option>
+                    <option value={3}>3 - 中等优先级</option>
+                    <option value={2}>2 - 低优先级</option>
+                    <option value={1}>1 - 保底学校</option>
+                  </select>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-3"
+                      checked={formData.financial_aid_requested}
+                      onChange={(e) => setFormData(prev => ({ 
+                        ...prev, 
+                        financial_aid_requested: e.target.checked 
+                      }))}
+                    />
+                    <span>申请经济援助</span>
+                  </label>
+                  
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-3"
+                      checked={formData.scholarship_applied}
+                      onChange={(e) => setFormData(prev => ({ 
+                        ...prev, 
+                        scholarship_applied: e.target.checked 
+                      }))}
+                    />
+                    <span>申请奖学金</span>
+                  </label>
+                </div>
+
+                <div>
+                  <label className="label">备注</label>
+                  <textarea
+                    className="input"
+                    rows={3}
+                    placeholder="关于此申请的任何额外说明..."
+                    value={formData.notes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                  />
+                </div>
+
+                <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setShowApplicationForm(false)}
+                    className="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                  >
+                    取消
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                  >
+                    {loading ? '创建中...' : '创建申请'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
