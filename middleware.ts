@@ -8,7 +8,16 @@ export async function middleware(req: NextRequest) {
 
   const {
     data: { user },
+    error: userError
   } = await supabase.auth.getUser()
+
+  console.log('Middleware user check:', {
+    path: req.nextUrl.pathname,
+    hasUser: !!user,
+    userError,
+    userId: user?.id,
+    userEmail: user?.email
+  })
 
   // If user is not signed in and the current path is not auth related, redirect to login
   if (!user && !req.nextUrl.pathname.startsWith('/auth')) {
@@ -43,7 +52,9 @@ export async function middleware(req: NextRequest) {
     
     // Debug logging (remove in production)
     console.log('Middleware debug:', {
+      path: req.nextUrl.pathname,
       userId: user.id,
+      userEmail: user.email,
       hasProfile: !!profile,
       hasRole: !!userRole,
       hasStudentData: !!studentData,
@@ -66,8 +77,8 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/auth/setup', req.url))
     }
 
-    // If user is signed in and trying to access other auth pages (login), redirect based on setup status
-    if (req.nextUrl.pathname.startsWith('/auth/login') || req.nextUrl.pathname.startsWith('/auth/callback')) {
+    // If user is signed in and trying to access login page, redirect based on setup status
+    if (req.nextUrl.pathname === '/auth/login') {
       if (hasCompletedSetup) {
         if (userRole?.role === 'student' || studentData) {
           return NextResponse.redirect(new URL('/dashboard/student', req.url))
