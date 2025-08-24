@@ -11,5 +11,6 @@ export async function GET(request: NextRequest) {
   }
 
   // URL to redirect to after sign in process completes
-  return NextResponse.redirect(requestUrl.origin)
+  // Redirect to login page so middleware can handle proper routing based on setup status
+  return NextResponse.redirect(`${requestUrl.origin}/auth/login`)
 }
