@@ -497,7 +497,7 @@ export default function NewApplicationPage() {
                 )}
 
                 {/* Timeline and Requirements */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <div className="space-y-8">
                   <ApplicationTimeline 
                     selectedUniversity={selectedUniversity}
                     applicationDeadline={formData.deadline}
