@@ -25,6 +25,11 @@ export default function SetupPage() {
   const user = useUser()
   const router = useRouter()
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/auth/login')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
@@ -47,7 +52,7 @@ export default function SetupPage() {
       // Create user role
       const { error: roleError } = await supabase
         .from('user_roles')
-        .insert({
+        .upsert({
           user_id: user.id,
           role: role,
         })
@@ -58,7 +63,7 @@ export default function SetupPage() {
       if (role === 'student') {
         const { error: studentError } = await supabase
           .from('students')
-          .insert({
+          .upsert({
             user_id: user.id,
             graduation_year: formData.graduation_year,
             gpa: formData.gpa ? parseFloat(formData.gpa) : null,
@@ -106,12 +111,23 @@ export default function SetupPage() {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">
-            Complete Your Profile
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Tell us about yourself to get started
-          </p>
+          <div className="flex justify-between items-center mb-4">
+            <div></div>
+            <div>
+              <h2 className="text-3xl font-extrabold text-gray-900">
+                Complete Your Profile
+              </h2>
+              <p className="mt-2 text-sm text-gray-600">
+                Tell us about yourself to get started
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+              Quit Setup
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">

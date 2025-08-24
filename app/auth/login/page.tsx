@@ -16,9 +16,83 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (session) {
-      router.push('/')
+      router.push('/dashboard/student')
     }
   }, [session, router])
+
+  useEffect(() => {
+    // Add password visibility toggle functionality
+    const addPasswordToggle = () => {
+      const passwordInputs = document.querySelectorAll('input[type="password"]')
+      
+      passwordInputs.forEach((input) => {
+        if (input.parentElement && !input.parentElement.querySelector('.password-toggle')) {
+          const container = input.parentElement
+          container.style.position = 'relative'
+          
+          const toggleButton = document.createElement('button')
+          toggleButton.type = 'button'
+          toggleButton.className = 'password-toggle'
+          toggleButton.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          `
+          toggleButton.style.cssText = `
+            position: absolute;
+            right: 8px;
+            bottom: 12%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            z-index: 10;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: color 0.2s;
+          `
+          
+          toggleButton.addEventListener('mouseenter', () => {
+            toggleButton.style.color = '#374151'
+          })
+          
+          toggleButton.addEventListener('mouseleave', () => {
+            toggleButton.style.color = '#6b7280'
+          })
+          
+          toggleButton.addEventListener('click', () => {
+            const passwordInput = input as HTMLInputElement
+            const isPassword = passwordInput.type === 'password'
+            passwordInput.type = isPassword ? 'text' : 'password'
+            toggleButton.innerHTML = isPassword ? `
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            ` : `
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            `
+          })
+          
+          container.appendChild(toggleButton)
+        }
+      })
+    }
+
+    // Run initially and on DOM changes
+    addPasswordToggle()
+    const observer = new MutationObserver(addPasswordToggle)
+    observer.observe(document.body, { childList: true, subtree: true })
+    
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

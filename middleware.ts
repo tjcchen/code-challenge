@@ -15,9 +15,69 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', req.url))
   }
 
-  // If user is signed in and trying to access auth pages, redirect to home
-  if (user && req.nextUrl.pathname.startsWith('/auth') && req.nextUrl.pathname !== '/auth/setup') {
-    return NextResponse.redirect(new URL('/', req.url))
+  // If user is signed in, check if they have completed setup
+  if (user) {
+    // Check if user has a profile
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+
+    // Check if user has a role
+    const { data: userRole, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+
+    // Also check if user has student data (fallback)
+    const { data: studentData } = await supabase
+      .from('students')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+
+    // User has completed setup if they have profile AND (role OR student data)
+    const hasCompletedSetup = profile && (userRole || studentData)
+    
+    // Debug logging (remove in production)
+    console.log('Middleware debug:', {
+      userId: user.id,
+      hasProfile: !!profile,
+      hasRole: !!userRole,
+      hasStudentData: !!studentData,
+      hasCompletedSetup,
+      profileError,
+      roleError
+    })
+
+    // If setup is complete and trying to access setup page, redirect to dashboard
+    if (hasCompletedSetup && req.nextUrl.pathname === '/auth/setup') {
+      if (userRole?.role === 'student' || studentData) {
+        return NextResponse.redirect(new URL('/dashboard/student', req.url))
+      } else if (userRole?.role === 'parent') {
+        return NextResponse.redirect(new URL('/dashboard/parent', req.url))
+      }
+    }
+
+    // If setup is not complete and trying to access dashboard, redirect to setup
+    if (!hasCompletedSetup && req.nextUrl.pathname.startsWith('/dashboard')) {
+      return NextResponse.redirect(new URL('/auth/setup', req.url))
+    }
+
+    // If user is signed in and trying to access other auth pages (login), redirect based on setup status
+    if (req.nextUrl.pathname.startsWith('/auth/login') || req.nextUrl.pathname.startsWith('/auth/callback')) {
+      if (hasCompletedSetup) {
+        if (userRole?.role === 'student' || studentData) {
+          return NextResponse.redirect(new URL('/dashboard/student', req.url))
+        } else if (userRole?.role === 'parent') {
+          return NextResponse.redirect(new URL('/dashboard/parent', req.url))
+        }
+      } else {
+        return NextResponse.redirect(new URL('/auth/setup', req.url))
+      }
+    }
   }
 
   return res
