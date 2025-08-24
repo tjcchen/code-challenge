@@ -2,7 +2,9 @@ import { getParentChildren } from '@/lib/auth'
 import { createServerSupabase } from '@/lib/supabase-server'
 import { Navbar } from '@/components/layout/Navbar'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { Calendar, Clock, DollarSign, TrendingUp, University, User } from 'lucide-react'
+import { Calendar, Clock, DollarSign, TrendingUp, Building2, User } from 'lucide-react'
+
+export const dynamic = 'force-dynamic'
 
 export default async function ParentDashboard() {
   const children = await getParentChildren()
@@ -10,7 +12,7 @@ export default async function ParentDashboard() {
 
   // Fetch applications for all children
   const childrenApplications = await Promise.all(
-    children.map(async (child) => {
+    children.map(async (child: any) => {
       const { data: applications } = await supabase
         .from('applications')
         .select(`
@@ -70,7 +72,7 @@ export default async function ParentDashboard() {
           <div className="card">
             <div className="flex items-center">
               <div className="p-2 bg-primary-100 rounded-lg">
-                <University className="h-6 w-6 text-primary-600" />
+                <Building2 className="h-6 w-6 text-primary-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Applications</p>
@@ -122,7 +124,7 @@ export default async function ParentDashboard() {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Applications by Child</h2>
 
             <div className="space-y-8">
-              {childrenApplications.map(({ child, applications }) => (
+              {childrenApplications.map(({ child, applications }: any) => (
                 <div key={child.id} className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-primary-100 rounded-lg">
@@ -140,7 +142,7 @@ export default async function ParentDashboard() {
 
                   {applications.length > 0 ? (
                     <div className="space-y-3 ml-10">
-                      {applications.map((application) => (
+                      {applications.map((application: any) => (
                         <div key={application.id} className="card hover:shadow-md transition-shadow">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
@@ -148,7 +150,7 @@ export default async function ParentDashboard() {
                                 {application.university.name}
                               </h4>
                               <p className="text-sm text-gray-600 mt-1">
-                                {application.application_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} • 
+                                {application.application_type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())} • 
                                 {application.intended_major || 'Undecided'}
                               </p>
                               <div className="flex items-center mt-2 space-x-4">
@@ -166,7 +168,7 @@ export default async function ParentDashboard() {
                             </div>
                             <div className="text-right">
                               <p className="text-sm text-gray-500">
-                                {application.requirements?.filter(req => req.status === 'completed').length || 0}/
+                                {application.requirements?.filter((req: any) => req.status === 'completed').length || 0}/
                                 {application.requirements?.length || 0} requirements
                               </p>
                               <div className="w-20 bg-gray-200 rounded-full h-2 mt-1">
@@ -174,7 +176,7 @@ export default async function ParentDashboard() {
                                   className="bg-primary-600 h-2 rounded-full" 
                                   style={{ 
                                     width: `${application.requirements?.length ? 
-                                      (application.requirements.filter(req => req.status === 'completed').length / application.requirements.length) * 100 : 0}%` 
+                                      (application.requirements.filter((req: any) => req.status === 'completed').length / application.requirements.length) * 100 : 0}%` 
                                   }}
                                 ></div>
                               </div>
@@ -203,7 +205,7 @@ export default async function ParentDashboard() {
                     </div>
                   ) : (
                     <div className="ml-10 text-center py-8 bg-gray-50 rounded-lg">
-                      <University className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                      <Building2 className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                       <p className="text-sm text-gray-600">No applications yet</p>
                     </div>
                   )}

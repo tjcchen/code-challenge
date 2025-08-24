@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { createClientSupabase } from '@/lib/supabase'
 import { useUser } from '@supabase/auth-helpers-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function SetupPage() {
   const [role, setRole] = useState<'student' | 'parent'>('student')
   const [loading, setLoading] = useState(false)

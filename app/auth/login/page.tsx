@@ -3,6 +3,8 @@
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { createClientSupabase } from '@/lib/supabase'
+
+export const dynamic = 'force-dynamic'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useSession } from '@supabase/auth-helpers-react'

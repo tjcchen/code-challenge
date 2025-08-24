@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClientSupabase } from '@/lib/supabase'
 import { useUser } from '@supabase/auth-helpers-react'
 import { Navbar } from '@/components/layout/Navbar'
-import { Search, University, ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Search, Building2 } from 'lucide-react'
 import Link from 'next/link'
 import type { University as UniversityType, ApplicationType } from '@/types/database'
 
@@ -341,7 +341,7 @@ export default function NewApplicationPage() {
               </form>
             ) : (
               <div className="card text-center py-12">
-                <University className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Select a University</h3>
                 <p className="text-gray-600">Choose a university from the list to create your application</p>
               </div>

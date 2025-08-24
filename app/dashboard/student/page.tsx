@@ -5,6 +5,8 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Calendar, Clock, Plus, TrendingUp, GraduationCap, Building2 } from 'lucide-react'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function StudentDashboard() {
   const student = await getStudentProfile()
   const supabase = createServerSupabase()
