@@ -337,6 +337,24 @@ CREATE POLICY "Parents can view notes on children's applications" ON application
     )
 );
 
+-- Application events policies
+CREATE POLICY "Students can view own application events" ON application_events FOR SELECT USING (
+    EXISTS (
+        SELECT 1 FROM applications a 
+        JOIN students s ON s.id = a.student_id 
+        WHERE a.id = application_events.application_id AND s.user_id = auth.uid()
+    )
+);
+CREATE POLICY "System can create application events" ON application_events FOR INSERT WITH CHECK (true);
+CREATE POLICY "Parents can view children's application events" ON application_events FOR SELECT USING (
+    EXISTS (
+        SELECT 1 FROM applications a 
+        JOIN students s ON s.id = a.student_id 
+        JOIN parent_student_relationships psr ON psr.student_id = s.id 
+        WHERE a.id = application_events.application_id AND psr.parent_id = auth.uid()
+    )
+);
+
 -- =============================================
 -- FUNCTIONS AND TRIGGERS
 -- =============================================

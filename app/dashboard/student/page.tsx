@@ -112,42 +112,53 @@ export default async function StudentDashboard() {
               </Link>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6 grid grid-cols-1 gap-1">
               {applications?.map((application) => (
-                <div key={application.id} className="card hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">
-                        {application.university.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {application.application_type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())} • 
-                        {application.intended_major || 'Undecided'}
-                      </p>
-                      <div className="flex items-center mt-2 space-x-4">
-                        <StatusBadge status={application.status} />
-                        <span className="text-sm text-gray-500">
-                          Due: {new Date(application.deadline).toLocaleDateString()}
-                        </span>
+                <Link key={application.id} href={`/dashboard/student/applications/${application.id}`}>
+                  <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-blue-200 transition-all duration-200 cursor-pointer group">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 pr-6">
+                        <div className="flex items-center mb-3">
+                          <Building2 className="h-5 w-5 text-blue-600 mr-2" />
+                          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                            {application.university.name}
+                          </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3 flex items-center">
+                          <GraduationCap className="h-4 w-4 mr-1" />
+                          {application.application_type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())} • 
+                          {application.intended_major || 'Undecided'}
+                        </p>
+                        <div className="flex items-center space-x-4">
+                          <StatusBadge status={application.status} />
+                          <div className="flex items-center text-sm text-gray-500">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            Due: {new Date(application.deadline).toLocaleDateString()}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-500">
-                        {application.requirements?.filter((req: any) => req.status === 'completed').length || 0}/
-                        {application.requirements?.length || 0} requirements
-                      </p>
-                      <div className="w-20 bg-gray-200 rounded-full h-2 mt-1">
-                        <div 
-                          className="bg-primary-600 h-2 rounded-full" 
-                          style={{ 
-                            width: `${application.requirements?.length ? 
-                              (application.requirements.filter((req: any) => req.status === 'completed').length / application.requirements.length) * 100 : 0}%` 
-                          }}
-                        ></div>
+                      <div className="text-right min-w-[120px]">
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          {application.requirements?.filter((req: any) => req.status === 'completed').length || 0}/
+                          {application.requirements?.length || 0} requirements
+                        </p>
+                        <div className="w-24 bg-gray-200 rounded-full h-2.5">
+                          <div 
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                            style={{ 
+                              width: `${application.requirements?.length ? 
+                                (application.requirements.filter((req: any) => req.status === 'completed').length / application.requirements.length) * 100 : 0}%` 
+                            }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {application.requirements?.length ? 
+                            Math.round((application.requirements.filter((req: any) => req.status === 'completed').length / application.requirements.length) * 100) : 0}% complete
+                        </p>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               )) || (
                 <div className="text-center py-12">
                   <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
